@@ -1,0 +1,5 @@
+{
+  "name": "Sistema de Gestión Escolar",
+  "description": "Una aplicación de gestión administrativa para un colegio, permitiendo el registro de alumnos, gestión de pagos y generación de reportes.",
+  "requestFramePermissions": []
+}
