@@ -27,7 +27,7 @@ const NewStudentForm: React.FC<NewStudentFormProps> = ({ setCurrentView }) => {
     useEffect(() => {
         if (repCedula) {
             const currentYear = new Date().getFullYear();
-            const schoolYear = `${currentYear + 1}-${String(currentYear + 2).slice(2)}`;
+            const schoolYear = `${currentYear}-${String(currentYear + 1).slice(2)}`;
             setMatricula(`mat-${schoolYear}-${repCedula}`);
         } else {
             setMatricula('');

@@ -97,7 +97,7 @@ function getRepresentativeByCedula(cedula) {
   const repHeaders = repData.shift();
   const representatives = _convertSheetDataToObjects(repData, repHeaders);
 
-  const representative = representatives.find(r => r.cedula == cedula);
+  const representative = representatives.find(r => String(r.cedula).trim() == cedula);
 
   if (!representative) {
     return null;
@@ -107,7 +107,7 @@ function getRepresentativeByCedula(cedula) {
   const stuHeaders = stuData.shift();
   const allStudents = _convertSheetDataToObjects(stuData, stuHeaders);
 
-  representative.students = allStudents.filter(s => s.representativeCedula == cedula);
+  representative.students = allStudents.filter(s => String(s.representativeCedula).trim() == cedula);
   
   return representative;
 }
@@ -187,29 +187,30 @@ function addStudentAndRepresentative(data) {
   
   let representativeRow = -1;
   for (let i = 1; i < repData.length; i++) {
-    if (repData[i][cedulaColIndex] == data.repCedula) {
+    if (String(repData[i][cedulaColIndex]).trim() == data.repCedula) {
       representativeRow = i + 1;
       break;
     }
   }
 
   const currentYear = new Date().getFullYear();
-  const schoolYear = `${currentYear + 1}-${String(currentYear + 2).slice(2)}`;
+  const schoolYear = `${currentYear}-${String(currentYear + 1).slice(2)}`;
   
-  let newMatricula;
+  let matricula;
   
   if (representativeRow > -1) { // Update existing representative
-    const updatedRepData = [data.repCedula, data.repName, data.phone, data.email, data.address, repData[representativeRow-1][repHeaders.indexOf('matricula')]];
+    const matriculaIndex = repHeaders.indexOf('matricula');
+    matricula = repData[representativeRow-1][matriculaIndex];
+    const updatedRepData = [data.repCedula, data.repName, data.phone, data.email, data.address, matricula];
     repSheet.getRange(representativeRow, 1, 1, repHeaders.length).setValues([updatedRepData]);
-    newMatricula = repData[representativeRow-1][repHeaders.indexOf('matricula')];
   } else { // Create new representative
-    newMatricula = `mat-${schoolYear}-${data.repCedula}`;
-    const newRepData = [data.repCedula, data.repName, data.phone, data.email, data.address, newMatricula];
+    matricula = `mat-${schoolYear}-${data.repCedula}`;
+    const newRepData = [data.repCedula, data.repName, data.phone, data.email, data.address, matricula];
     repSheet.appendRow(newRepData);
   }
 
   // Add new student
-  const studentId = `${data.repCedula}-${(stuSheet.getLastRow())}`; // Simple unique ID
+  const studentId = Utilities.getUuid();
   const newStudentData = [studentId, data.repCedula, data.studentName, data.level, data.grade, data.section];
   stuSheet.appendRow(newStudentData);
 
